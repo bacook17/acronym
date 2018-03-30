@@ -1,7 +1,7 @@
 # ACRONYM (Acronym CReatiON for You and Me)
 =====
 
-A python-based tool for creating English-ish Acronyms from your long project name
+A python-based tool for creating English-ish Acronyms from your fancy project
 
 To install, simply navigate to install directory, and run:
 ```
