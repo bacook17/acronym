@@ -34,7 +34,7 @@ class CleanCommand(Command):
 
 setup(
     name='acronym',
-    version='1.1.0',
+    version='1.2.0',
     author='Ben Cook',
     author_email='bcook@cfa.harvard.edu',
     packages=['acronym'],

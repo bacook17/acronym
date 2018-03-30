@@ -6,9 +6,12 @@ import re
 import nltk
 try:
     nltk.corpus.words.ensure_loaded()
+    nltk.corpus.brown.ensure_loaded()
+    nltk.corpus.gutenberg.ensure_loaded()
 except LookupError:
     print('Initial downloading of word corpus')
-    nltk.download('words')
+    for d in ['words', 'brown', 'gutenberg']:
+        nltk.download(d)
 import argparse
 import sys
 from pkg_resources import resource_filename
@@ -85,7 +88,7 @@ def _index_in(s, word, offset=0, must_start=False):
             return [start + offset] + sub_result + [end + offset]
 
 
-def find_acronyms(s, existing={}, min_length=4, max_length=6):
+def find_acronyms(s, corpus, existing={}, min_length=4, max_length=6):
     """
     Returns a dictionary of English acronyms from input string s
     
@@ -93,6 +96,8 @@ def find_acronyms(s, existing={}, min_length=4, max_length=6):
     ----------
     s : str
         input string name to find acronyms from
+    corpus : nltk corpus object
+        which corpus of words to use for reference
     min_length : int, optional
         minimum length acronym to generate, default is 3
     max_length : int, optional
@@ -110,7 +115,7 @@ def find_acronyms(s, existing={}, min_length=4, max_length=6):
     s = s.lower()
     first = s[0]
     print('Collecting word corpus')
-    full_list = nltk.corpus.words.words()
+    full_list = corpus.words()
     word_list = np.unique([w.lower() for w in full_list if min_length <= len(w)
                            and len(w) <= max_length
                            and w.lower().startswith(first)
@@ -144,8 +149,16 @@ if __name__ == '__main__':
                         help='file to save results')
     parser.add_argument('--nested', action='store_true',
                         help='whether to search for nested, known acronyms')
+    parser.add_argument('--strict', '-s', action='count')
     args = parser.parse_args()
 
+    if args.strict == 0:
+        corpus = nltk.corpus.words
+    elif args.strict == 1:
+        corpus = nltk.corpus.brown
+    else:
+        corpus = nltk.corpus.gutenberg
+    
     existing = {}
     if args.nested:
         path = resource_filename('acronym', 'data/')
@@ -156,7 +169,7 @@ if __name__ == '__main__':
                 key, _, val = line.partition(': ')
                 existing[key.lower()] = val.lower()
     
-    results = find_acronyms(args.name, existing=existing,
+    results = find_acronyms(args.name, corpus, existing=existing,
                             min_length=args.min_length,
                             max_length=args.max_length)
     
