@@ -10,7 +10,6 @@ To use, run like the following:
 > acronym.py "the long name of your very fancy project"
 
 optional arguments:
-"""bash
   -h, --help            show this help message and exit
   --min-length MIN_LENGTH
                         minimum length acronym to generate (default: 3)
@@ -23,4 +22,3 @@ optional arguments:
                         factor to prefer first letters of each word (default:
                         10.0)
   --output OUTPUT       file to save results (default: STDOUT)
-"""
