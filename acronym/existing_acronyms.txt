@@ -1,2 +1,0 @@
-HST: Hubble Space Telescope
-JWST: James Webb Space Telescope

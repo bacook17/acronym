@@ -118,7 +118,7 @@ def find_acronyms(s, existing={}, min_length=4, max_length=6):
     if len(existing) > 0:
         print('Comparing to known acronyms')
         for k, v in existing.items():
-            if v in s
+            s = s.replace(v, k)
     print('Identifying matching acronyms')
     for word in word_list:
         result = _index_in(s, word, must_start=True)
@@ -143,19 +143,18 @@ if __name__ == '__main__':
     parser.add_argument('--output', default='STDOUT', type=str,
                         help='file to save results')
     parser.add_argument('--nested', action='store_true',
-                        help='whether to search for nested, known acronyms') 
+                        help='whether to search for nested, known acronyms')
     args = parser.parse_args()
 
     existing = {}
     if args.nested:
         path = resource_filename('acronym', 'data/')
-        with open(path + 'existing_acronyms.txt', 'w') as f:
+        print(path + 'existing_acronyms.txt')
+        with open(path + 'existing_acronyms.txt', 'r') as f:
             for line in f.readlines():
                 line = line.strip('\n')
                 key, _, val = line.partition(': ')
-                key = key.replace(' ', '')
-                val.replace('
-                existing[key] = val
+                existing[key.lower()] = val.lower()
     
     results = find_acronyms(args.name, existing=existing,
                             min_length=args.min_length,
