@@ -29,4 +29,6 @@ optional arguments:
   --max-length MAX_LENGTH
                         maximum length acronym to generate (default: 6)
   --output OUTPUT       file to save results (default: STDOUT)
+  --nested              whether to search for nested, known acronyms (default:
+                        False)
 ```
