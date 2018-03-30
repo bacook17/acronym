@@ -1,14 +1,13 @@
-# acronym
-ACRONYM (Acronym CReatiON for You and Me)
+# ACRONYM (Acronym CReatiON for You and Me)
 =====
 
 A python-based tool for creating English-ish Acronyms from your long project name
 
 To install, simply navigate to install directory, and run:
->>> make 
+> make 
 
 To use, run like the following:
->>> acronym.py "the long name of your very fancy project"
+> acronym.py "the long name of your very fancy project"
 
 optional arguments:
 """
