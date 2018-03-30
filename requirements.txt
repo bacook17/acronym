@@ -1,0 +1,4 @@
+pyenchant
+tqdm
+numpy
+argparse
