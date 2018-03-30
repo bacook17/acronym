@@ -11,6 +11,7 @@ except LookupError:
     nltk.download('words')
 import argparse
 import sys
+from pkg_resources import resource_filename
 
 
 __all__ = ['find_acronyms']
@@ -84,7 +85,7 @@ def _index_in(s, word, offset=0, must_start=False):
             return [start + offset] + sub_result + [end + offset]
 
 
-def find_acronyms(s, min_length=4, max_length=6):
+def find_acronyms(s, existing={}, min_length=4, max_length=6):
     """
     Returns a dictionary of English acronyms from input string s
     
@@ -114,6 +115,10 @@ def find_acronyms(s, min_length=4, max_length=6):
                            and len(w) <= max_length
                            and w.lower().startswith(first)
                            and w.isalpha()])
+    if len(existing) > 0:
+        print('Comparing to known acronyms')
+        for k, v in existing.items():
+            if v in s
     print('Identifying matching acronyms')
     for word in word_list:
         result = _index_in(s, word, must_start=True)
@@ -137,9 +142,23 @@ if __name__ == '__main__':
                         help='maximum length acronym to generate')
     parser.add_argument('--output', default='STDOUT', type=str,
                         help='file to save results')
+    parser.add_argument('--nested', action='store_true',
+                        help='whether to search for nested, known acronyms') 
     args = parser.parse_args()
 
-    results = find_acronyms(args.name, min_length=args.min_length,
+    existing = {}
+    if args.nested:
+        path = resource_filename('acronym', 'data/')
+        with open(path + 'existing_acronyms.txt', 'w') as f:
+            for line in f.readlines():
+                line = line.strip('\n')
+                key, _, val = line.partition(': ')
+                key = key.replace(' ', '')
+                val.replace('
+                existing[key] = val
+    
+    results = find_acronyms(args.name, existing=existing,
+                            min_length=args.min_length,
                             max_length=args.max_length)
     
     if args.output == 'STDOUT':

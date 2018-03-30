@@ -42,6 +42,7 @@ setup(
     license='LICENSE',
     description="""ACRONYM (Acronym CReatiON for You and Me)""",
     install_requires=['numpy', 'tqdm', 'nltk'],
+    package_data={'acronym': ['data/existing_acronyms.txt']},
     include_package_data=True,
     scripts=['acronym/acronym.py'],
     cmdclass={'clean': CleanCommand, 'install': CustomInstall}
