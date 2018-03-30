@@ -34,14 +34,14 @@ class CleanCommand(Command):
 
 setup(
     name='acronym',
-    version='0.2.1',
+    version='1.0.0',
     author='Ben Cook',
     author_email='bcook@cfa.harvard.edu',
     packages=['acronym'],
     url='https://github.com/bacook17/acronym',
     license='LICENSE',
     description="""ACRONYM (Acronym CReatiON for You and Me)""",
-    install_requires=['numpy', 'tqdm', 'pyenchant'],
+    install_requires=['numpy', 'tqdm', 'nltk'],
     include_package_data=True,
     scripts=['acronym/acronym.py'],
     cmdclass={'clean': CleanCommand, 'install': CustomInstall}

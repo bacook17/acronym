@@ -1,8 +1,14 @@
 #! /usr/bin/env python
+
 import numpy as np
-from tqdm import trange
 import re
-import enchant
+# import enchant
+import nltk
+try:
+    nltk.corpus.words.ensure_loaded()
+except LookupError:
+    print('Initial downloading of word corpus')
+    nltk.download('words')
 import argparse
 import sys
 
@@ -38,8 +44,47 @@ def _get_acronym(s, idx):
     return result
 
 
-def find_acronyms(s, min_length=3, max_length=6, first_weight=10.,
-                  max_tries=10000):
+def _index_in(s, word, offset=0, must_start=False):
+    """
+    Returns a list of indices for each character of word (in order) in s
+    If word cannot be found in-order within s, returns None
+    If multiple possibilities, returns only one possible solution
+    
+    The algorithm is recursive, and offset and must_start are used
+    for later iterations of the algorithm.
+    """
+    if must_start and not s.startswith(word[0]):
+        return None
+    # Base case
+    if len(word) == 1:
+        if word in s:
+            return [s.find(word) + offset]
+        else:
+            return None
+    # Use regular-expressions to search for any substring starting and ending
+    # with first and last letters of "word"
+    pattern = word[0] + '\D*' + word[-1]
+    result = re.search(pattern, s)
+    if result is None:
+        return None
+    start = result.start()
+    end = result.end() - 1
+    # If these were last two letters of word
+    if len(word) == 2:
+        return [start+offset, end+offset]
+    # recursively search interior of substring
+    else:
+        sub_s = s[start+1:end]
+        sub_word = word[1:-1]
+        sub_result = _index_in(sub_s, sub_word, offset=start+offset+1,
+                               must_start=False)
+        if sub_result is None:
+            return None
+        else:
+            return [start + offset] + sub_result + [end + offset]
+
+
+def find_acronyms(s, min_length=4, max_length=6):
     """
     Returns a dictionary of English acronyms from input string s
     
@@ -51,10 +96,6 @@ def find_acronyms(s, min_length=3, max_length=6, first_weight=10.,
         minimum length acronym to generate, default is 3
     max_length : int, optional
         maximum length acronym to generate, default is 6
-    first_weight : float, optional
-        factor to prefer first letters of each word, default is 10.0
-    max_tries : int, optional
-        maximum number of random iterations to attempt, default is 10,000
 
     Returns
     -------
@@ -64,34 +105,23 @@ def find_acronyms(s, min_length=3, max_length=6, first_weight=10.,
     """
 
     # Initialize dictionary and results
-    d = enchant.Dict('en_US')
     results = dict()
     s = s.lower()
-
-    weights = np.ones(len(s), dtype=float)
-    # Never draw a space
-    spaces = [space.start() for space in re.finditer(' ', s)]
-    for i in spaces:
-        weights[i] = 0.
-    # How much to prefer first letters of each word
-    first_letters = [0] + [i + 1 for i in spaces]
-    for i in first_letters:
-        weights[i] *= first_weight
-    weights[0] = 0.  # algorithm always start with the first letter
-    weights /= np.sum(weights)  # sum to 1
-    # Always include the "generic" acronym in the results (ex: NASA)
-    base_attempt = _get_acronym(s, first_letters)
-    results[base_attempt] = _set_caps(s, first_letters)
-
-    for _ in trange(max_tries, desc='Finding Acronyms'):
-        # randomly draw a combination of letters
-        n_letters = np.random.randint(low=min_length-1, high=max_length)
-        idx = [0] + sorted(np.random.choice(np.arange(len(s)), size=n_letters,
-                                            replace=False, p=weights))
-        this_try = _get_acronym(s, idx)
-        # check if is in the dictionary, and then add
-        if (d.check(this_try.lower())) and (this_try not in results):
-            results[this_try] = _set_caps(s, idx)
+    first = s[0]
+    print('Collecting word corpus')
+    full_list = nltk.corpus.words.words()
+    word_list = np.unique([w.lower() for w in full_list if min_length <= len(w)
+                           and len(w) <= max_length
+                           and w.lower().startswith(first)
+                           and w.isalpha()])
+    print('Identifying matching acronyms')
+    for word in word_list:
+        result = _index_in(s, word, must_start=True)
+        if result is not None:
+            acronym = word.upper()
+            cap_version = _set_caps(s, result)
+            results[acronym] = cap_version
+    print('Process Complete')
     return results
 
 
@@ -101,28 +131,24 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=formatter)
     parser.add_argument('name', metavar='S', type=str,
                         help='the name to generate acronyms from')
-    parser.add_argument('--min-length', default=3, type=int,
+    parser.add_argument('--min-length', default=4, type=int,
                         help='minimum length acronym to generate')
     parser.add_argument('--max-length', default=6, type=int,
                         help='maximum length acronym to generate')
-    parser.add_argument('--max-tries', default=100000, type=int,
-                        help='maximum number of iterations to attempt')
-    parser.add_argument('--first-weight', default=10., type=float,
-                        help='factor to prefer first letters of each word')
     parser.add_argument('--output', default='STDOUT', type=str,
                         help='file to save results')
     args = parser.parse_args()
 
     results = find_acronyms(args.name, min_length=args.min_length,
-                            max_length=args.max_length,
-                            max_tries=args.max_tries,
-                            first_weight=args.first_weight)
+                            max_length=args.max_length)
     
     if args.output == 'STDOUT':
         f = sys.stdout
     else:
         f = open(args.output, 'w')
-    for k in sorted(results.keys()):
+    keys = sorted(results.keys())
+    keys.sort(key=len, reverse=True)
+    for k in keys:
         f.write('{:s}\t{:s}\n'.format(k, results[k]))
         f.flush()
     if args.output != 'STDOUT':
