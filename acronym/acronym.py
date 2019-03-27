@@ -139,7 +139,7 @@ def main():
     # Setup the command-line tool
     formatter = argparse.ArgumentDefaultsHelpFormatter
     parser = argparse.ArgumentParser(formatter_class=formatter)
-    parser.add_argument('name', metavar='S', type=str,
+    parser.add_argument('name', metavar='ProjectName', type=str,
                         help='the name to generate acronyms from')
     parser.add_argument('--min-length', default=4, type=int,
                         help='minimum length acronym to generate')
