@@ -20,12 +20,14 @@ $ acronym "the long name of your very fancy project"
 Collecting word corpus
 Identifying matching acronyms
 Process Complete
-TAMOYO	The long nAMe of yOur very fancY prOject
-TANREC	The long nAme of your very faNcy pRojECt
-TAREFA	The long nAme of youR vEry FAncy project
-TARPOT	The long nAme of youR very fancy PrOjecT
+TERRACE	ThE long name of youR veRy fAnCy projEct
+THEREAT	THE long name of youR vEry fAncy projecT
+TYRRANY	The long name of YouR veRy fANcY project
 TAVERN	The long nAme of your VERy faNcy project
-TAVERT	The long nAme of your VEry fancy pRojecT
+TEAPOT	ThE long nAme of your very fancy PrOjecT
+TENANT	ThE loNg name of your very fANcy projecT
+TENOUR	ThE loNg name of yOUr very fancy pRoject
+TENURE	ThE loNg name of yoUr very fancy pRojEct
 [...]
 ```
 
