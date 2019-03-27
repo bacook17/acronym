@@ -4,9 +4,27 @@
 # To use: python setup.py install
 
 import os
-
+import re
+import codecs
 from setuptools import setup, Command
 from setuptools.command.install import install
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+
+def read(*parts):
+    with codecs.open(os.path.join(here, *parts), 'r') as fp:
+        return fp.read()
+
+
+# https://packaging.python.org/guides/single-sourcing-package-version/
+def find_version(*file_paths):
+    version_file = read(*file_paths)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                              version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
 
 
 class CustomInstall(install):
@@ -31,19 +49,29 @@ class CleanCommand(Command):
     def run(self):
         os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info')
 
+        
+entry_points = {
+    'console_scripts': ['acronym = acronym.acronym:main']
+}
+
+description = """ACRONYM (Acronym CReatiON for You and Me)"""
 
 setup(
     name='acronym',
-    version='1.2.0',
+    version=find_version('acronym', '__init__.py'),
     author='Ben Cook',
     author_email='bcook@cfa.harvard.edu',
+    entry_points=entry_points,
     packages=['acronym'],
     url='https://github.com/bacook17/acronym',
     license='LICENSE',
-    description="""ACRONYM (Acronym CReatiON for You and Me)""",
+    description=description,
+    long_description=description,
     install_requires=['numpy', 'tqdm', 'nltk'],
     package_data={'acronym': ['data/existing_acronyms.txt']},
     include_package_data=True,
-    scripts=['acronym/acronym.py'],
-    cmdclass={'clean': CleanCommand, 'install': CustomInstall}
+    cmdclass={'clean': CleanCommand, 'install': CustomInstall},
+    classifiers=[
+        "Topic :: Scientific/Engineering :: Astronomy",
+    ]
 )

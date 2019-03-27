@@ -1,1 +1,5 @@
-__all__ = ['acronym.py']
+__all__ = ['acronym']
+
+from . import acronym
+
+__version__ = '1.3.0'

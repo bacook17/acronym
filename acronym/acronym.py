@@ -135,7 +135,7 @@ def find_acronyms(s, corpus, existing={}, min_length=4, max_length=6):
     return results
 
 
-if __name__ == '__main__':
+def main():
     # Setup the command-line tool
     formatter = argparse.ArgumentDefaultsHelpFormatter
     parser = argparse.ArgumentParser(formatter_class=formatter)
@@ -184,3 +184,7 @@ if __name__ == '__main__':
         f.flush()
     if args.output != 'STDOUT':
         f.close()
+
+
+if __name__ == '__main__':
+    main()
