@@ -143,7 +143,7 @@ def main():
                         help='the name to generate acronyms from')
     parser.add_argument('--min-length', default=4, type=int,
                         help='minimum length acronym to generate')
-    parser.add_argument('--max-length', default=6, type=int,
+    parser.add_argument('--max-length', default=8, type=int,
                         help='maximum length acronym to generate')
     parser.add_argument('--output', default='STDOUT', type=str,
                         help='file to save results')
