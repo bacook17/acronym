@@ -149,7 +149,8 @@ def main():
                         help='file to save results')
     parser.add_argument('--nested', action='store_true',
                         help='whether to search for nested, known acronyms')
-    parser.add_argument('--strict', '-s', action='count')
+    parser.add_argument('--strict', '-s', action='count',
+                        help='How strictly should the words be related to real English?')
     args = parser.parse_args()
 
     if args.strict == 0:
