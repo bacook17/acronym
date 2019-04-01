@@ -42,4 +42,5 @@ optional arguments:
                         False)
   --strict, -s          How strictly should the words be related to real
                         English? (default: None)
+  --all-words, -a       whether to use letters from all words (default: False)
 ```
