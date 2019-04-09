@@ -3,6 +3,8 @@
 
 A python-based tool for creating English-ish Acronyms from your fancy project
 
+`ACRONYM` is described in this paper released on the arXiv: https://arxiv.org/abs/1903.12180
+
 `ACRONYM` can be installed using pip:
 
 ```
