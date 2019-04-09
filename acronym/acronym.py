@@ -99,7 +99,7 @@ def find_acronyms(s, corpus, existing={}, min_length=4, max_length=6):
     corpus : nltk corpus object
         which corpus of words to use for reference
     min_length : int, optional
-        minimum length acronym to generate, default is 3
+        minimum length acronym to generate, default is 4
     max_length : int, optional
         maximum length acronym to generate, default is 6
 
