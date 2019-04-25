@@ -3,6 +3,7 @@
 import numpy as np
 import re
 # import enchant
+from itertools import product
 import nltk
 try:
     nltk.corpus.words.ensure_loaded()
@@ -47,6 +48,43 @@ def _get_acronym(s, idx):
         result += s[i].upper()
     return result
 
+def _check_all_words_caps(s):
+    """
+    Returns True ie each word in the string s has at least one capital 
+    letter in it. Returns False if not.
+    """ 
+    capword_count = 0
+    words = s.split()
+    for word in words:
+        for letter in word:
+            if letter.isupper():
+                capword_count += 1
+                break
+    return len(words) == capword_count
+
+def _check_allwords(s, word):
+    idlists = list()
+    for lett in word:
+        idlists.append([i for i, ltr in enumerate(s) if ltr == lett])
+
+    incrementals = list()
+    for i in product(*idlists):
+        if len(list(i)) != len(set(i)):
+            continue
+        if list(i) == sorted(i):
+            incrementals.append(list(i))
+
+    spaces = [ctr for ctr, lett in enumerate(s) if lett == " "]
+    for incremental in incrementals:
+        letperword = [len([i for i in incremental if i<space]) for space in spaces]
+        letperword.append(len(incremental))
+        if 0 in letperword:
+            continue
+        if len(letperword) != len(set(letperword)):
+            continue
+        return incremental
+    return None
+
 
 def _index_in(s, word, offset=0, must_start=False):
     """
@@ -69,6 +107,7 @@ def _index_in(s, word, offset=0, must_start=False):
     # with first and last letters of "word"
     pattern = word[0] + '\D*' + word[-1]
     result = re.search(pattern, s)
+    
     if result is None:
         return None
     start = result.start()
@@ -88,7 +127,7 @@ def _index_in(s, word, offset=0, must_start=False):
             return [start + offset] + sub_result + [end + offset]
 
 
-def find_acronyms(s, corpus, existing={}, min_length=4, max_length=6):
+def find_acronyms(s, corpus, existing={}, min_length=4, max_length=6, all_words=False):
     """
     Returns a dictionary of English acronyms from input string s
     
@@ -102,6 +141,8 @@ def find_acronyms(s, corpus, existing={}, min_length=4, max_length=6):
         minimum length acronym to generate, default is 3
     max_length : int, optional
         maximum length acronym to generate, default is 6
+    all_words : bool, optional
+        if True, the acronym should use letters from all words, default is False
 
     Returns
     -------
@@ -126,10 +167,16 @@ def find_acronyms(s, corpus, existing={}, min_length=4, max_length=6):
             s = s.replace(v, k)
     print('Identifying matching acronyms')
     for word in word_list:
-        result = _index_in(s, word, must_start=True)
+        if all_words:
+            result = _check_allwords(s, word)
+        else:
+            result = _index_in(s, word, must_start=True)
         if result is not None:
             acronym = word.upper()
             cap_version = _set_caps(s, result)
+            if all_words:
+                if not _check_all_words_caps(cap_version):
+                    continue
             results[acronym] = cap_version
     print('Process Complete')
     return results
@@ -151,6 +198,8 @@ def main():
                         help='whether to search for nested, known acronyms')
     parser.add_argument('--strict', '-s', action='count',
                         help='How strictly should the words be related to real English?')
+    parser.add_argument('--all-words', '-a', action='store_true',
+                        help='whether to use letters from all words')
     args = parser.parse_args()
 
     if args.strict == 0:
@@ -172,7 +221,8 @@ def main():
     
     results = find_acronyms(args.name, corpus, existing=existing,
                             min_length=args.min_length,
-                            max_length=args.max_length)
+                            max_length=args.max_length,
+                            all_words=args.all_words)
     
     if args.output == 'STDOUT':
         f = sys.stdout
