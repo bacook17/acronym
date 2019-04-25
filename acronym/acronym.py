@@ -3,6 +3,7 @@
 import numpy as np
 import re
 # import enchant
+from itertools import product
 import nltk
 try:
     nltk.corpus.words.ensure_loaded()
@@ -61,6 +62,28 @@ def _check_all_words_caps(s):
                 break
     return len(words) == capword_count
 
+def _check_allwords(s, word):
+    idlists = list()
+    for lett in word:
+        idlists.append([i for i, ltr in enumerate(s) if ltr == lett])
+
+    incrementals = list()
+    for i in product(*idlists):
+        if len(list(i)) != len(set(i)):
+            continue
+        if list(i) == sorted(i):
+            incrementals.append(list(i))
+
+    spaces = [ctr for ctr, lett in enumerate(s) if lett == " "]
+    for incremental in incrementals:
+        letperword = [len([i for i in incremental if i<space]) for space in spaces]
+        letperword.append(len(incremental))
+        if 0 in letperword:
+            continue
+        if len(letperword) != len(set(letperword)):
+            continue
+        return incremental
+    return None
 
 
 def _index_in(s, word, offset=0, must_start=False):
@@ -84,6 +107,7 @@ def _index_in(s, word, offset=0, must_start=False):
     # with first and last letters of "word"
     pattern = word[0] + '\D*' + word[-1]
     result = re.search(pattern, s)
+    
     if result is None:
         return None
     start = result.start()
@@ -143,7 +167,10 @@ def find_acronyms(s, corpus, existing={}, min_length=4, max_length=6, all_words=
             s = s.replace(v, k)
     print('Identifying matching acronyms')
     for word in word_list:
-        result = _index_in(s, word, must_start=True)
+        if all_words:
+            result = _check_allwords(s, word)
+        else:
+            result = _index_in(s, word, must_start=True)
         if result is not None:
             acronym = word.upper()
             cap_version = _set_caps(s, result)
