@@ -10,6 +10,13 @@ try:
     nltk.corpus.gutenberg.ensure_loaded()
 except LookupError:
     print('Initial downloading of word corpus')
+    import ssl
+    try:
+        _create_unverified_https_context = ssl._create_unverified_context
+    except AttributeError:
+        pass
+    else:
+        ssl._create_default_https_context = _create_unverified_https_context
     for d in ['words', 'brown', 'gutenberg']:
         nltk.download(d)
 import argparse
