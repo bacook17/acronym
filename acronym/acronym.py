@@ -171,7 +171,7 @@ def main():
     keys = sorted(results.keys())
     keys.sort(key=len, reverse=True)
     for k in keys:
-        f.write('{:s}\t{:s}\n'.format(k, results[k]))
+        f.write('{:s}\t: {:s}\n'.format(k, results[k]))
         f.flush()
     if args.output != 'STDOUT':
         f.close()
