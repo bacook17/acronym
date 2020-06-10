@@ -153,7 +153,7 @@ def main():
                         help='How strictly should the words be related to real English? (-s for strict, -ss for very strict)')
     args = parser.parse_args()
 
-    if args.strict == 0:
+    if args.strict in [0, None]:
         corpus = nltk.corpus.words
     elif args.strict == 1:
         corpus = nltk.corpus.brown
