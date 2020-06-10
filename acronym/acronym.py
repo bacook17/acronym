@@ -21,7 +21,6 @@ except LookupError:
         nltk.download(d)
 import argparse
 import sys
-from pkg_resources import resource_filename
 
 
 __all__ = ['find_acronyms']
@@ -95,7 +94,7 @@ def _index_in(s, word, offset=0, must_start=False):
             return [start + offset] + sub_result + [end + offset]
 
 
-def find_acronyms(s, corpus, existing={}, min_length=4, max_length=6):
+def find_acronyms(s, corpus, min_length=5, max_length=7):
     """
     Returns a dictionary of English acronyms from input string s
     
@@ -106,9 +105,9 @@ def find_acronyms(s, corpus, existing={}, min_length=4, max_length=6):
     corpus : nltk corpus object
         which corpus of words to use for reference
     min_length : int, optional
-        minimum length acronym to generate, default is 3
+        minimum length acronym to generate, default is 5
     max_length : int, optional
-        maximum length acronym to generate, default is 6
+        maximum length acronym to generate, default is 7
 
     Returns
     -------
@@ -127,10 +126,6 @@ def find_acronyms(s, corpus, existing={}, min_length=4, max_length=6):
                            and len(w) <= max_length
                            and w.lower().startswith(first)
                            and w.isalpha()])
-    if len(existing) > 0:
-        print('Comparing to known acronyms')
-        for k, v in existing.items():
-            s = s.replace(v, k)
     print('Identifying matching acronyms')
     for word in word_list:
         result = _index_in(s, word, must_start=True)
@@ -148,16 +143,14 @@ def main():
     parser = argparse.ArgumentParser(formatter_class=formatter)
     parser.add_argument('name', metavar='ProjectName', type=str,
                         help='the name to generate acronyms from')
-    parser.add_argument('--min-length', default=4, type=int,
+    parser.add_argument('--min-length', default=5, type=int,
                         help='minimum length acronym to generate')
-    parser.add_argument('--max-length', default=8, type=int,
+    parser.add_argument('--max-length', default=7, type=int,
                         help='maximum length acronym to generate')
     parser.add_argument('--output', default='STDOUT', type=str,
-                        help='file to save results')
-    parser.add_argument('--nested', action='store_true',
-                        help='whether to search for nested, known acronyms')
+                        help='file to save results (prints to STDOUT if not given)')
     parser.add_argument('--strict', '-s', action='count',
-                        help='How strictly should the words be related to real English?')
+                        help='How strictly should the words be related to real English? (-s for strict, -ss for very strict)')
     args = parser.parse_args()
 
     if args.strict == 0:
@@ -167,17 +160,7 @@ def main():
     else:
         corpus = nltk.corpus.gutenberg
     
-    existing = {}
-    if args.nested:
-        path = resource_filename('acronym', 'data/')
-        print(path + 'existing_acronyms.txt')
-        with open(path + 'existing_acronyms.txt', 'r') as f:
-            for line in f.readlines():
-                line = line.strip('\n')
-                key, _, val = line.partition(': ')
-                existing[key.lower()] = val.lower()
-    
-    results = find_acronyms(args.name, corpus, existing=existing,
+    results = find_acronyms(args.name, corpus,
                             min_length=args.min_length,
                             max_length=args.max_length)
     
@@ -196,3 +179,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+    

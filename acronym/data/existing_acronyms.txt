@@ -1,3 +1,0 @@
-HST: Hubble Space Telescope
-JWST: James Webb Space Telescope
-ASKAP: Australian Square Kilometer Array Pathfinder

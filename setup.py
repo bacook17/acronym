@@ -68,8 +68,6 @@ setup(
     description=description,
     long_description=description,
     install_requires=['numpy', 'tqdm', 'nltk'],
-    package_data={'acronym': ['data/existing_acronyms.txt']},
-    include_package_data=True,
     cmdclass={'clean': CleanCommand, 'install': CustomInstall},
     classifiers=[
         "Topic :: Scientific/Engineering :: Astronomy",
