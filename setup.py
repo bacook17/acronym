@@ -67,7 +67,7 @@ setup(
     license='LICENSE',
     description=description,
     long_description=description,
-    install_requires=['numpy', 'tqdm', 'nltk'],
+    install_requires=['numpy', 'tqdm', 'nltk', 're', 'pandas'],
     cmdclass={'clean': CleanCommand, 'install': CustomInstall},
     classifiers=[
         "Topic :: Scientific/Engineering :: Astronomy",
