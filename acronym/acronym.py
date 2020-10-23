@@ -1,9 +1,11 @@
 #! /usr/bin/env python
 
 import numpy as np
+import pandas as pd
 import re
 # import enchant
 import nltk
+from scoring import score_acronym
 try:
     nltk.corpus.words.ensure_loaded()
     nltk.corpus.brown.ensure_loaded()
@@ -118,6 +120,7 @@ def find_acronyms(s, corpus, min_length=5, max_length=7):
 
     # Initialize dictionary and results
     results = dict()
+    scores = dict()
     s = s.lower()
     first = s[0]
     print('Collecting word corpus')
@@ -133,8 +136,12 @@ def find_acronyms(s, corpus, min_length=5, max_length=7):
             acronym = word.upper()
             cap_version = _set_caps(s, result)
             results[acronym] = cap_version
+            scores[acronym] = score_acronym(cap_version)
     print('Process Complete')
-    return results
+    results = pd.DataFrame({'long_version': results,
+                            'score': scores})
+    results.index.name = 'acronym'
+    return results.sort_values('score')
 
 
 def main():
@@ -168,10 +175,8 @@ def main():
         f = sys.stdout
     else:
         f = open(args.output, 'w')
-    keys = sorted(results.keys())
-    keys.sort(key=len, reverse=True)
-    for k in keys:
-        f.write('{:s}\t: {:s}\n'.format(k, results[k]))
+    for key, row in results.sort_values('score').iterrows():
+        f.write(f'{key:{args.max_length}s}: {row.long_verson:s}\n')
         f.flush()
     if args.output != 'STDOUT':
         f.close()
