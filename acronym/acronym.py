@@ -5,7 +5,7 @@ import pandas as pd
 import re
 # import enchant
 import nltk
-from scoring import score_acronym
+from .scoring import score_acronym
 try:
     nltk.corpus.words.ensure_loaded()
     nltk.corpus.brown.ensure_loaded()
