@@ -60,7 +60,7 @@ setup(
     name='acronym',
     version=find_version('acronym', '__init__.py'),
     author='Ben Cook',
-    author_email='bcook@cfa.harvard.edu',
+    author_email='bacook17@gmail.com',
     entry_points=entry_points,
     packages=['acronym'],
     url='https://github.com/bacook17/acronym',
