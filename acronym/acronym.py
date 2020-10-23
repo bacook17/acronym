@@ -22,6 +22,7 @@ except LookupError:
     for d in ['words', 'brown', 'gutenberg']:
         nltk.download(d)
 import argparse
+import textwrap
 import sys
 
 
@@ -125,35 +126,47 @@ def find_acronyms(s, corpus, min_length=5, max_length=7):
     first = s[0]
     print('Collecting word corpus')
     full_list = corpus.words()
+    short_list = np.unique([w.lower() for w in full_list if 3 <= len(w)
+                            and w.isalpha()])
     word_list = np.unique([w.lower() for w in full_list if min_length <= len(w)
                            and len(w) <= max_length
                            and w.lower().startswith(first)
                            and w.isalpha()])
     print('Identifying matching acronyms')
     for word in word_list:
+        if word.lower() in s:
+            continue
         result = _index_in(s, word, must_start=True)
         if result is not None:
             acronym = word.upper()
             cap_version = _set_caps(s, result)
             results[acronym] = cap_version
-            scores[acronym] = score_acronym(cap_version)
+            scores[acronym] = score_acronym(cap_version, corpus=short_list)
     print('Process Complete')
     results = pd.DataFrame({'long_version': results,
                             'score': scores})
     results.index.name = 'acronym'
-    return results.sort_values('score')
+    return results.sort_values('score', ascending=False)
 
 
 def main():
     # Setup the command-line tool
     formatter = argparse.ArgumentDefaultsHelpFormatter
-    parser = argparse.ArgumentParser(formatter_class=formatter)
+    parser = argparse.ArgumentParser(
+        prog="acronym.py",
+        formatter_class=formatter,
+        epilog=(
+            textwrap.dedent("Scoring System:\n"+score_acronym.__doc__)
+        ),
+    )
     parser.add_argument('name', metavar='ProjectName', type=str,
                         help='the name to generate acronyms from')
-    parser.add_argument('--min-length', default=5, type=int,
+    parser.add_argument('--min-length', default=4, type=int,
                         help='minimum length acronym to generate')
-    parser.add_argument('--max-length', default=7, type=int,
+    parser.add_argument('--max-length', default=9, type=int,
                         help='maximum length acronym to generate')
+    parser.add_argument('--max-results', default=30, type=int,
+                        help='maximum number of options to generate')
     parser.add_argument('--output', default='STDOUT', type=str,
                         help='file to save results (prints to STDOUT if not given)')
     parser.add_argument('--strict', '-s', action='count',
@@ -175,8 +188,12 @@ def main():
         f = sys.stdout
     else:
         f = open(args.output, 'w')
-    for key, row in results.sort_values('score').iterrows():
-        f.write(f'{key:{args.max_length}s}: {row.long_verson:s}\n')
+    f.write(f'(Score) {"ACRONYM":{args.max_length+1}s}: Spelling\n')
+    f.write('='*(len(args.name)+args.max_length+11)+'\n')
+    for i, (key, row) in enumerate(results.sort_values('score', ascending=False).iterrows()):
+        if i >= args.max_results:
+            break
+        f.write(f'({row.score:5d}) {key:{args.max_length+1}s}: {row.long_version:s}\n')
         f.flush()
     if args.output != 'STDOUT':
         f.close()
