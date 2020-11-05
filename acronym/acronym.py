@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+__version__ = '2.0.1'
+
 import numpy as np
 import pandas as pd
 import re
@@ -153,7 +155,7 @@ def main():
     # Setup the command-line tool
     formatter = argparse.ArgumentDefaultsHelpFormatter
     parser = argparse.ArgumentParser(
-        prog="acronym.py",
+        prog="acronym",
         formatter_class=formatter,
         epilog=(
             textwrap.dedent("Scoring System:\n"+score_acronym.__doc__)
@@ -171,6 +173,7 @@ def main():
                         help='file to save results (prints to STDOUT if not given)')
     parser.add_argument('--strict', '-s', action='count',
                         help='How strictly should the words be related to real English? (-s for strict, -ss for very strict)')
+    parser.add_argument('--version', action='version', version='%(prog)s' + f'{__version__}')
     args = parser.parse_args()
 
     if args.strict in [0, None]:
