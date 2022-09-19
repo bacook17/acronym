@@ -56,6 +56,51 @@ Process Complete
 (   27) TAYER     : The long nAme of Your vEry fancy pRoject
 ```
 
+*New in Version 2.0.2*
+
+New option to add custom corpus, such as those in other languages (German,
+Russian, ...) listed [here](https://wortschatz.uni-leipzig.de/en/download/).
+
+```
+  --corpus, -c          Path to the text file (words) to read in as corpus
+                        (default: NULL)
+```
+
+```
+acronym -c ~/Downloads/deu_news_2021_10K/deu_news_2021_10K-words.txt "Ich vermisse dich so sehr, aber du weißt es nicht, und ich kann nichts tun"
+Collecting word corpus
+Identifying matching acronyms
+Process Complete
+(Score) ACRONYM   : Spelling
+==============================================================================================
+(   45) INDIANS   : Ich vermisse dich so sehr, aber du weißt es Nicht, unD Ich kAnn NichtS tun
+(   30) IDEEN     : Ich vermisse Dich so sEhr, aber du weißt Es nicht, und ich kann nichts tuN
+(   30) INDIA     : Ich vermisse dich so sehr, aber du weißt es Nicht, unD Ich kAnn nichts tun
+(   26) ISSUES    : Ich vermiSSe dich so sehr, aber dU weißt Es nicht, und ich kann nichtS tun
+(   25) IDEE      : Ich vermisse Dich so sehr, aber du wEißt Es nicht, und ich kann nichts tun
+(   25) IDRIS     : Ich vermisse Dich so sehR, aber du weißt es nicht, und ich kann nIchtS tun
+(   25) IVES      : Ich Vermisse dich so sehr, aber du weißt Es nicht, und ich kann nichtS tun
+(   25) INKA      : Ich vermisse dich so sehr, aber du weißt es Nicht, und ich KAnn nichts tun
+(   23) IHRES     : IcH veRmisse dich so sehr, aber du weißt Es nicht, und ich kann nichtS tun
+(   23) IRAK      : Ich veRmisse dich so sehr, Aber du weißt es nicht, und ich Kann nichts tun
+(   23) IRWIN     : Ich veRmisse dich so sehr, aber du Weißt es nicht, und ich kann nIchts tuN
+(   23) IHREN     : IcH veRmisse dich so sehr, aber du weißt Es nicht, und ich kann nichts tuN
+(   23) IVICA     : Ich VermIsse dich so sehr, aber du weißt es nicht, und iCh kAnn nichts tun
+(   23) IRRTE     : Ich veRmisse dich so sehR, aber du weißT Es nicht, und ich kann nichts tun
+(   20) IWAN      : Ich vermisse dich so sehr, aber du Weißt es nicht, und ich kAnn nichts tuN
+(   20) IHRE      : IcH vermisse dich so sehr, abeR du weißt Es nicht, und ich kann nichts tun
+(   18) IRRE      : Ich veRmisse dich so sehr, abeR du weißt Es nicht, und ich kann nichts tun
+(   18) ISAR      : Ich vermiSse dich so sehr, AbeR du weißt es nicht, und ich kann nichts tun
+(   18) IMERI     : Ich verMissE dich so sehr, abeR du weißt es nicht, und ich kann nIchts tun
+(   16) IRRER     : Ich veRmisse dich so sehR, abER du weißt es nicht, und ich kann nichts tun
+(   16) IHRER     : IcH veRmisse dich so sehr, abER du weißt es nicht, und ich kann nichts tun
+(   16) IRINA     : Ich veRmIsse dich so sehr, aber du weißt es nicht, uNd ich kAnn nichts tun
+(   13) IRIS      : Ich veRmisse dich so sehr, aber du weißt es nicht, und ich kann nIchtS tun
+(   13) IRAN      : Ich veRmisse dich so sehr, aber du weißt es nicht, und ich kAnn nichts tuN
+(   13) ISIN      : Ich vermiSse dich so sehr, aber du weißt es nicht, und ich kann nIchts tuN
+(   13) IUCN      : Ich vermisse dich so sehr, aber dU weißt es nicht, und ich kann niChts tuN
+```
+
 Acronym Scoring System *New in Version 2.0.0*
 ```
 For each capitalized letter in the acronym:
