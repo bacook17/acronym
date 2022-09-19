@@ -1,12 +1,14 @@
 #! /usr/bin/env python
 
-__version__ = '2.0.1'
+__version__ = '2.0.2'
 
+import os
 import numpy as np
 import pandas as pd
 import re
 # import enchant
 import nltk
+from nltk.corpus import PlaintextCorpusReader
 from .scoring import score_acronym
 try:
     nltk.corpus.words.ensure_loaded()
@@ -150,6 +152,10 @@ def find_acronyms(s, corpus, min_length=5, max_length=7):
     results.index.name = 'acronym'
     return results.sort_values('score', ascending=False)
 
+def validate_file(f):
+    if f != 'NULL' and not os.path.exists(f):
+        raise argparse.ArgumentTypeError("{0} does not exist".format(f))
+    return f
 
 def main():
     # Setup the command-line tool
@@ -173,6 +179,9 @@ def main():
                         help='file to save results (prints to STDOUT if not given)')
     parser.add_argument('--strict', '-s', action='count',
                         help='How strictly should the words be related to real English? (-s for strict, -ss for very strict)')
+    parser.add_argument('--corpus', '-c', default="NULL", type=validate_file,
+                        help='Absolute path to the .txt file to read in as corpus. Overwrite the strict option')
+
     parser.add_argument('--version', action='version', version='%(prog)s' + f'{__version__}')
     args = parser.parse_args()
 
@@ -183,6 +192,11 @@ def main():
     else:
         corpus = nltk.corpus.gutenberg
     
+    if args.corpus != 'NULL':
+        corpus_root = os.path.dirname(args.corpus)
+        corpus_file = os.path.basename(args.corpus)
+        corpus = PlaintextCorpusReader(corpus_root, corpus_file)
+
     results = find_acronyms(args.name, corpus,
                             min_length=args.min_length,
                             max_length=args.max_length)

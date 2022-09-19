@@ -59,8 +59,8 @@ description = """ACRONYM (Acronym CReatiON for You and Me)"""
 setup(
     name='acronym',
     version=find_version('acronym', '__init__.py'),
-    author='Ben Cook',
-    author_email='bacook17@gmail.com',
+    author='Ben Cook, Kinh Nguyen',
+    author_email='bacook17@gmail.com, kinh.nguyen@uni-heidelberg.de',
     entry_points=entry_points,
     packages=['acronym'],
     url='https://github.com/bacook17/acronym',
